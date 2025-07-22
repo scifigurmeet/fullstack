@@ -1,347 +1,280 @@
-# Next.js Introduction & File-Based Routing
-**Duration: 1 Hour | Faculty Development Workshop**
+# Next.js Introduction & File-Based Routing (App Router)
+**Duration: 1 Hour | Faculty Development Workshop** 🚀
 
-## What is Next.js? (10 minutes)
+## 🤔 What is Next.js? (10 minutes)
 
-Next.js is a React framework that provides:
-- **Zero-config setup** - No complex webpack configurations
-- **File-based routing** - Pages are created by adding files to the `pages` directory
-- **Built-in optimizations** - Automatic code splitting, image optimization
-- **Multiple rendering methods** - Static, server-side, and client-side rendering
-- **API routes** - Build full-stack applications
-- **Production ready** - Built by Vercel with performance in mind
+Next.js = **React with superpowers** 🔋
 
-### Why Next.js over plain React?
-- **Routing**: No need for React Router
-- **Performance**: Automatic optimizations
-- **SEO**: Server-side rendering support
-- **Developer Experience**: Hot reloading, error overlay
-- **Production**: Easy deployment
+**Key Benefits:**
+- 🎯 Zero-config setup  
+- 📁 File-based routing (folder = page)
+- ⚡ Built-in optimizations
+- 🔌 Full-stack capabilities
 
-## Setting Up Next.js (10 minutes)
+**App Router vs Pages Router:**
+- **Old:** `pages/about.js` 
+- **New:** `app/about/page.tsx` ✅
 
-### Prerequisites
-- Node.js 16.8 or later
-- npm or yarn package manager
+---
 
-### Create a New Next.js Project
+## 🛠️ Setup (10 minutes)
 
 ```bash
-# Using create-next-app (recommended)
-npx create-next-app@latest my-nextjs-app
+# Create project
+npx create-next-app@latest my-app
 
-# Navigate to project
-cd my-nextjs-app
+# Choose: TypeScript✅, App Router✅, Tailwind✅
 
-# Start development server
+cd my-app
 npm run dev
 ```
 
-### Manual Setup (Alternative)
-```bash
-# Create project folder
-mkdir my-nextjs-app
-cd my-nextjs-app
+**Visit:** `http://localhost:3000` 🎉
 
-# Initialize npm
-npm init -y
+---
 
-# Install Next.js, React, and React DOM
-npm install next react react-dom
-
-# Add scripts to package.json
-```
-
-Add these scripts to `package.json`:
-```json
-{
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  }
-}
-```
-
-## Project Structure Overview (5 minutes)
+## 📁 Project Structure (5 minutes)
 
 ```
-my-nextjs-app/
-├── pages/          # File-based routing
-├── public/         # Static assets
-├── styles/         # CSS files
-├── package.json
-└── next.config.js  # Next.js configuration
+my-app/
+├── 📁 app/                    👈 Routes go here
+│   ├── 📄 layout.tsx          👈 Wraps all pages
+│   ├── 📄 page.tsx            👈 Homepage (/)
+│   └── 📄 globals.css         
+├── 📁 public/                 👈 Static files
+└── 📄 package.json            
 ```
 
-## File-Based Routing Fundamentals (25 minutes)
+---
 
-### Basic Pages
+## 🗺️ File-Based Routing (25 minutes)
 
-Create files in the `pages` directory to define routes:
+### 🏠 Basic Routes
 
-**pages/index.js** (Home page - `/`)
-```jsx
-export default function Home() {
-  return (
-    <div>
-      <h1>Welcome to Next.js!</h1>
-      <p>This is the home page</p>
-    </div>
-  )
-}
+```
+📁 app/
+├── 📄 page.tsx              👈 /
+├── 📁 about/
+│   └── 📄 page.tsx          👈 /about
+└── 📁 contact/
+    └── 📄 page.tsx          👈 /contact
 ```
 
-**pages/about.js** (About page - `/about`)
-```jsx
+**Create `app/about/page.tsx`:**
+```tsx
 export default function About() {
   return (
-    <div>
-      <h1>About Us</h1>
-      <p>This is the about page</p>
+    <div className="p-8">
+      <h1>👋 About Page</h1>
+      <p>URL: /about</p>
     </div>
   )
 }
 ```
 
-**pages/contact.js** (Contact page - `/contact`)
-```jsx
-export default function Contact() {
-  return (
-    <div>
-      <h1>Contact</h1>
-      <p>Get in touch with us</p>
-    </div>
-  )
-}
+### 📂 Nested Routes
+
+```
+📁 app/
+└── 📁 blog/
+    ├── 📄 page.tsx              👈 /blog
+    └── 📁 first-post/
+        └── 📄 page.tsx          👈 /blog/first-post
 ```
 
-### Nested Routes
+**Create `app/blog/page.tsx`:**
+```tsx
+import Link from 'next/link'
 
-Create folders to organize nested routes:
-
-**pages/blog/index.js** (Blog home - `/blog`)
-```jsx
 export default function Blog() {
   return (
-    <div>
-      <h1>Blog</h1>
-      <p>Welcome to our blog</p>
+    <div className="p-8">
+      <h1>📝 Blog</h1>
+      <Link href="/blog/first-post" className="text-blue-500">
+        Read First Post →
+      </Link>
     </div>
   )
 }
 ```
 
-**pages/blog/first-post.js** (Blog post - `/blog/first-post`)
-```jsx
-export default function FirstPost() {
+### 🎯 Dynamic Routes
+
+```
+📁 app/
+└── 📁 blog/
+    └── 📁 [slug]/
+        └── 📄 page.tsx          👈 /blog/anything
+```
+
+**Create `app/blog/[slug]/page.tsx`:**
+```tsx
+interface Props {
+  params: { slug: string }
+}
+
+export default function BlogPost({ params }: Props) {
   return (
-    <div>
-      <h1>My First Post</h1>
-      <p>This is my first blog post using Next.js!</p>
+    <div className="p-8">
+      <h1>📖 Post: {params.slug}</h1>
+      <p>Dynamic route for: <code>{params.slug}</code></p>
     </div>
   )
 }
 ```
 
-### Dynamic Routes
+**Test URLs:**
+- `/blog/my-story` ✅
+- `/blog/react-tips` ✅
+- `/blog/anything-works` ✅
 
-Use square brackets for dynamic segments:
+### 🎪 Catch-All Routes
 
-**pages/blog/[slug].js** (Dynamic blog post - `/blog/any-slug`)
-```jsx
-import { useRouter } from 'next/router'
+```
+📁 app/
+└── 📁 docs/
+    └── 📁 [...slug]/
+        └── 📄 page.tsx          👈 /docs/a/b/c
+```
 
-export default function BlogPost() {
-  const router = useRouter()
-  const { slug } = router.query
+**Create `app/docs/[...slug]/page.tsx`:**
+```tsx
+interface Props {
+  params: { slug: string[] }
+}
 
+export default function Docs({ params }: Props) {
   return (
-    <div>
-      <h1>Blog Post: {slug}</h1>
-      <p>This is a dynamic route for slug: {slug}</p>
+    <div className="p-8">
+      <h1>📚 Docs</h1>
+      <p>Path: /docs/{params.slug?.join('/')}</p>
+      <p>Segments: {JSON.stringify(params.slug)}</p>
     </div>
   )
 }
 ```
 
-**pages/user/[id].js** (User profile - `/user/123`)
-```jsx
-import { useRouter } from 'next/router'
+**Test URLs:**
+- `/docs/getting-started` ✅
+- `/docs/api/routes` ✅
+- `/docs/a/b/c/d` ✅
 
-export default function UserProfile() {
-  const router = useRouter()
-  const { id } = router.query
+---
 
-  return (
-    <div>
-      <h1>User Profile</h1>
-      <p>User ID: {id}</p>
-    </div>
-  )
-}
-```
+## 🔗 Navigation (8 minutes)
 
-### Catch-All Routes
+### 🎯 Link Component
 
-**pages/docs/[...slug].js** (Catches `/docs/a`, `/docs/a/b`, etc.)
-```jsx
-import { useRouter } from 'next/router'
-
-export default function Docs() {
-  const router = useRouter()
-  const { slug } = router.query
-
-  return (
-    <div>
-      <h1>Documentation</h1>
-      <p>Path segments: {JSON.stringify(slug)}</p>
-    </div>
-  )
-}
-```
-
-## Navigation Between Pages (8 minutes)
-
-### Using the Link Component
-
-**components/Navigation.js**
-```jsx
+**Create `components/Navigation.tsx`:**
+```tsx
 import Link from 'next/link'
 
 export default function Navigation() {
   return (
-    <nav style={{ padding: '20px', borderBottom: '1px solid #eee' }}>
-      <Link href="/">
-        <a style={{ marginRight: '15px' }}>Home</a>
-      </Link>
-      <Link href="/about">
-        <a style={{ marginRight: '15px' }}>About</a>
-      </Link>
-      <Link href="/blog">
-        <a style={{ marginRight: '15px' }}>Blog</a>
-      </Link>
-      <Link href="/contact">
-        <a>Contact</a>
-      </Link>
+    <nav className="bg-gray-800 p-4">
+      <div className="flex space-x-4">
+        <Link href="/" className="text-white hover:text-blue-300">
+          🏠 Home
+        </Link>
+        <Link href="/about" className="text-white hover:text-blue-300">
+          👋 About
+        </Link>
+        <Link href="/blog" className="text-white hover:text-blue-300">
+          📝 Blog
+        </Link>
+      </div>
     </nav>
   )
 }
 ```
 
-### Programmatic Navigation
+### 🎮 Programmatic Navigation
 
-```jsx
-import { useRouter } from 'next/router'
+**Create `app/demo/page.tsx`:**
+```tsx
+'use client'
+import { useRouter } from 'next/navigation'
 
-export default function HomePage() {
+export default function Demo() {
   const router = useRouter()
 
-  const handleClick = () => {
-    router.push('/about')
-  }
-
   return (
-    <div>
-      <h1>Home Page</h1>
-      <button onClick={handleClick}>
-        Go to About Page
+    <div className="p-8">
+      <h1>Navigation Demo</h1>
+      <button 
+        onClick={() => router.push('/about')}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Go to About
       </button>
     </div>
   )
 }
 ```
 
-## Practical Exercise (10 minutes)
+### 📋 Add Navigation to Layout
 
-Create a simple blog structure with the following pages:
-
-1. **Homepage** (`pages/index.js`) - Welcome message with navigation
-2. **Blog listing** (`pages/blog/index.js`) - List of blog posts
-3. **Individual blog post** (`pages/blog/[slug].js`) - Dynamic blog post page
-4. **Author profile** (`pages/author/[name].js`) - Dynamic author page
-
-### Complete Example
-
-**pages/_app.js** (Add global navigation)
-```jsx
+**Update `app/layout.tsx`:**
+```tsx
 import Navigation from '../components/Navigation'
+import './globals.css'
 
-export default function MyApp({ Component, pageProps }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <>
-      <Navigation />
-      <main style={{ padding: '20px' }}>
-        <Component {...pageProps} />
-      </main>
-    </>
+    <html lang="en">
+      <body>
+        <Navigation />
+        <main>{children}</main>
+      </body>
+    </html>
   )
 }
 ```
-
-**pages/index.js**
-```jsx
-import Link from 'next/link'
-
-export default function Home() {
-  const posts = [
-    { slug: 'getting-started-nextjs', title: 'Getting Started with Next.js' },
-    { slug: 'react-hooks-guide', title: 'React Hooks Guide' },
-  ]
-
-  return (
-    <div>
-      <h1>Welcome to My Blog</h1>
-      <h2>Recent Posts:</h2>
-      <ul>
-        {posts.map(post => (
-          <li key={post.slug}>
-            <Link href={`/blog/${post.slug}`}>
-              <a>{post.title}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-```
-
-## Key Commands Summary
-
-```bash
-# Create new Next.js app
-npx create-next-app@latest my-app
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-## Quick Reference
-
-| Route | File Path |
-|-------|-----------|
-| `/` | `pages/index.js` |
-| `/about` | `pages/about.js` |
-| `/blog` | `pages/blog/index.js` |
-| `/blog/post-1` | `pages/blog/post-1.js` |
-| `/blog/[slug]` | `pages/blog/[slug].js` |
-| `/docs/[...slug]` | `pages/docs/[...slug].js` |
-
-## Next Steps
-
-In the next session, we'll explore:
-- Static Site Generation (SSG)
-- Server-Side Rendering (SSR)  
-- Data fetching methods (`getStaticProps`, `getServerSideProps`)
-- Performance optimizations
 
 ---
 
-**Workshop Progress: 1/4 Complete** ✅
+## 🧪 Test Your Routes (2 minutes)
+
+```bash
+npm run dev
+```
+
+**Visit these URLs:**
+- `localhost:3000/` (Homepage)
+- `localhost:3000/about` (About)
+- `localhost:3000/blog` (Blog list)
+- `localhost:3000/blog/my-story` (Dynamic)
+- `localhost:3000/docs/getting-started` (Catch-all)
+
+---
+
+## 📚 Quick Reference
+
+| Route Type | Structure | Example |
+|------------|-----------|---------|
+| **Static** | `app/about/page.tsx` | `/about` |
+| **Nested** | `app/blog/post/page.tsx` | `/blog/post` |
+| **Dynamic** | `app/blog/[slug]/page.tsx` | `/blog/anything` |
+| **Catch-all** | `app/docs/[...slug]/page.tsx` | `/docs/a/b/c` |
+
+### 🎯 Key Rules
+- ✅ Folder + `page.tsx` = Route
+- ✅ `[name]` = Dynamic segment  
+- ✅ `[...name]` = Catch multiple segments
+- ✅ Use `<Link>` for navigation
+- ✅ Add `'use client'` for interactivity
+
+### 🚨 Common Mistakes
+- ❌ Missing `page.tsx` → No route
+- ❌ Using `<a>` → Page refresh
+- ❌ Forgetting `'use client'` → Hook errors
+
+---
+
+**🎉 Workshop Progress: 1/4 Complete** ✅
+
+**Next:** SSG & SSR with App Router! 🚀
