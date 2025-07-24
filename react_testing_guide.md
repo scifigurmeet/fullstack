@@ -272,17 +272,17 @@ const buttons = screen.getAllByRole('button');
 Create `src/components/LoginForm.jsx`:
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const LoginForm = ({ onSubmit }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       await onSubmit({ email, password });
     } finally {
@@ -293,7 +293,7 @@ const LoginForm = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
-      
+
       <div>
         <label htmlFor="email">Email:</label>
         <input
@@ -304,7 +304,7 @@ const LoginForm = ({ onSubmit }) => {
           required
         />
       </div>
-      
+
       <div>
         <label htmlFor="password">Password:</label>
         <input
@@ -315,9 +315,9 @@ const LoginForm = ({ onSubmit }) => {
           required
         />
       </div>
-      
+
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Logging in...' : 'Login'}
+        {isSubmitting ? "Logging in..." : "Login"}
       </button>
     </form>
   );
@@ -329,83 +329,133 @@ export default LoginForm;
 Test file `src/components/LoginForm.test.jsx`:
 
 ```javascript
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import LoginForm from './LoginForm';
+import React from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import LoginForm from "./LoginForm";
 
-describe('LoginForm Component', () => {
+describe("LoginForm Component", () => {
   const mockOnSubmit = jest.fn();
 
   // Reset mock before each test
   beforeEach(() => {
     mockOnSubmit.mockReset();
+    mockOnSubmit.mockResolvedValue(); // Ensure it returns a resolved promise
   });
 
-  test('renders login form correctly', () => {
+  test("renders login form correctly", () => {
     render(<LoginForm onSubmit={mockOnSubmit} />);
-    
+
     // Check form elements exist
-    expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Email:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password:')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Email:")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password:")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
   });
 
-  test('allows user to enter email and password', async () => {
-    const user = userEvent.setup();
+  test("allows user to enter email and password", async () => {
     render(<LoginForm onSubmit={mockOnSubmit} />);
-    
-    const emailInput = screen.getByLabelText('Email:');
-    const passwordInput = screen.getByLabelText('Password:');
-    
-    // Type in inputs
-    await user.type(emailInput, 'test@example.com');
-    await user.type(passwordInput, 'password123');
-    
+
+    const emailInput = screen.getByLabelText("Email:");
+    const passwordInput = screen.getByLabelText("Password:");
+
+    // Type in inputs using userEvent
+    await userEvent.type(emailInput, "test@example.com");
+    await userEvent.type(passwordInput, "password123");
+
     // Check values
-    expect(emailInput).toHaveValue('test@example.com');
-    expect(passwordInput).toHaveValue('password123');
+    expect(emailInput).toHaveValue("test@example.com");
+    expect(passwordInput).toHaveValue("password123");
   });
 
-  test('calls onSubmit with form data when submitted', async () => {
-    const user = userEvent.setup();
+  test("calls onSubmit with form data when submitted", async () => {
     render(<LoginForm onSubmit={mockOnSubmit} />);
-    
+
     // Fill form
-    await user.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await user.type(screen.getByLabelText('Password:'), 'password123');
-    
+    await userEvent.type(screen.getByLabelText("Email:"), "test@example.com");
+    await userEvent.type(screen.getByLabelText("Password:"), "password123");
+
     // Submit form
-    await user.click(screen.getByRole('button', { name: 'Login' }));
-    
-    // Check if onSubmit was called with correct data
-    expect(mockOnSubmit).toHaveBeenCalledWith({
-      email: 'test@example.com',
-      password: 'password123'
+    await userEvent.click(screen.getByRole("button", { name: "Login" }));
+
+    // Wait for the async operation to complete
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+      });
     });
   });
 
-  test('shows loading state during submission', async () => {
-    const slowSubmit = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
-    const user = userEvent.setup();
-    
+  test("shows loading state during submission", async () => {
+    // Create a promise that we can control
+    let resolvePromise;
+    const slowSubmit = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          resolvePromise = resolve;
+        })
+    );
+
     render(<LoginForm onSubmit={slowSubmit} />);
-    
+
     // Fill and submit form
-    await user.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await user.type(screen.getByLabelText('Password:'), 'password123');
-    await user.click(screen.getByRole('button', { name: 'Login' }));
-    
-    // Check loading state
-    expect(screen.getByRole('button', { name: 'Logging in...' })).toBeDisabled();
-    
+    await userEvent.type(screen.getByLabelText("Email:"), "test@example.com");
+    await userEvent.type(screen.getByLabelText("Password:"), "password123");
+
+    // Submit form
+    await userEvent.click(screen.getByRole("button", { name: "Login" }));
+
+    // Check loading state immediately after click
+    expect(
+      screen.getByRole("button", { name: "Logging in..." })
+    ).toBeDisabled();
+
+    // Resolve the promise
+    resolvePromise();
+
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Login' })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "Login" })).not.toBeDisabled();
+    });
+  });
+
+  test("prevents multiple submissions while loading", async () => {
+    let resolvePromise;
+    const slowSubmit = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          resolvePromise = resolve;
+        })
+    );
+
+    render(<LoginForm onSubmit={slowSubmit} />);
+
+    // Fill form
+    await userEvent.type(screen.getByLabelText("Email:"), "test@example.com");
+    await userEvent.type(screen.getByLabelText("Password:"), "password123");
+
+    // Submit form
+    await userEvent.click(screen.getByRole("button", { name: "Login" }));
+
+    // Try to click again while loading
+    const loadingButton = screen.getByRole("button", { name: "Logging in..." });
+    expect(loadingButton).toBeDisabled();
+
+    // Attempting to click disabled button should not call onSubmit again
+    fireEvent.click(loadingButton); // Use fireEvent for disabled elements
+    expect(slowSubmit).toHaveBeenCalledTimes(1);
+
+    // Resolve the promise
+    resolvePromise();
+
+    // Wait for form to return to normal state
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Login" })).not.toBeDisabled();
     });
   });
 });
+
 ```
 
 ---
