@@ -136,7 +136,7 @@ python manage.py runserver
 
 ```bash
 # Get JWT tokens by logging in
-curl -X POST http://127.0.0.1:8000/api/token/ -H "Content-Type: application/json" -d '{"username": "admin", "password": "admin123"}'
+curl -X POST http://127.0.0.1:8000/api/token/ -H "Content-Type: application/json" -d "{\"username\": \"admin\", \"password\": \"admin123\"}"
 ```
 
 **Response:**
