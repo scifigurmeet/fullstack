@@ -190,8 +190,8 @@ urlpatterns = [
 
 ```mermaid
 flowchart LR
-    A[Router] --> B[/api/books/ - List & Create]
-    A --> C[/api/books/1/ - Get, Update, Delete specific book]
+    A[Router] --> B["/api/books/<br/>List & Create"]
+    A --> C["/api/books/1/<br/>Get, Update, Delete"]
 ```
 
 ---
