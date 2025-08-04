@@ -140,11 +140,7 @@ sudo systemctl start postgresql
 
 **Option 2: Docker (Easy)**
 ```bash
-docker run --name postgres-db \
-  -e POSTGRES_USER=myuser \
-  -e POSTGRES_PASSWORD=mypass \
-  -e POSTGRES_DB=myapp \
-  -p 5432:5432 -d postgres:15
+docker run --name postgres-db -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypass -e POSTGRES_DB=myapp -p 5432:5432 -d postgres:15
 ```
 
 ### Basic PostgreSQL Operations
